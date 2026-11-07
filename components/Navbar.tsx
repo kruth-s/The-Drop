@@ -10,12 +10,12 @@ import {
   Home,
   Clock,
   QrCode,
-  FolderKanban,
-  Zap,
   Shield,
-  Layers,
+  FolderKanban,
   Search,
-  Camera,
+  LogOut,
+  LayoutGrid,
+  Github,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -27,10 +27,22 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ currentRoom, onOpenQR, isSyncing }) => {
   const [joinSlug, setJoinSlug] = useState('');
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
-  const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [recentRooms, setRecentRooms] = useState<string[]>([]);
+  const [authUser, setAuthUser] = useState<{ username: string; role: string } | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+
+  // Fetch logged in session
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.authenticated && data.user) {
+          setAuthUser(data.user);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Read recent rooms for dashboard dropdown
   useEffect(() => {
@@ -47,7 +59,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoom, onOpenQR, isSyncing
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setIsDashboardOpen(false);
-        setActiveMenu(null);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -77,198 +88,38 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoom, onOpenQR, isSyncing
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-zinc-800/80 bg-[#111111] text-zinc-100 select-none">
-      <div className="max-w-[1400px] mx-auto px-3 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-2 sm:gap-6">
+    <header className="sticky top-0 z-50 w-full bg-black text-zinc-100 select-none">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 h-16 flex items-center justify-between gap-4">
 
-        {/* Left: Brand Logo & Wordmark (Cloudflare Style) */}
-        <Link href="/" className="flex items-center gap-2 sm:gap-2.5 shrink-0 group">
-          {/* Vibrant Orange Cloud Logo */}
-          <div className="w-7 h-5 sm:w-8 sm:h-6 flex items-center justify-center text-[#ff5a1f] group-hover:scale-105 transition-transform shrink-0">
-            <svg viewBox="0 0 48 32" fill="currentColor" className="w-full h-full">
-              <path d="M37.5 12C36.8 5.4 31.2 0.2 24.4 0.2c-5.4 0-10.1 3.2-12.2 7.8C5.4 8.7 0 14.5 0 21.4 0 27.2 4.8 32 10.6 32h26.9c5.8 0 10.5-4.7 10.5-10.5 0-5.3-4-9.7-9.3-10.4l-1.2-.1z" />
-            </svg>
-          </div>
-          <span className="font-extrabold tracking-[0.14em] sm:tracking-[0.2em] text-xs sm:text-sm text-white uppercase group-hover:text-zinc-200 transition-colors shrink-0">
+        {/* Left: Brand Logo & Wordmark (Hollow ring circle + text, matching reference image) */}
+        <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
+          <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-white group-hover:border-[#ff5a1f] transition-colors flex items-center justify-center shrink-0" />
+          <span className="font-extrabold tracking-wider text-sm sm:text-base text-white group-hover:text-zinc-200 transition-colors uppercase">
             THE DROP
           </span>
         </Link>
 
-        {/* Center: Navigation Links (Clean text without arrows) */}
-        <nav className="hidden md:flex items-center gap-6 lg:gap-8 text-xs lg:text-sm font-medium text-zinc-200 relative">
-          {/* Products Dropdown */}
-          <div className="relative group">
-            <button
-              onClick={() => setActiveMenu(activeMenu === 'products' ? null : 'products')}
-              className="hover:text-[#ff5a1f] transition-colors py-2"
-            >
-              <span>Products</span>
-            </button>
-
-            {activeMenu === 'products' && (
-              <div className="absolute top-full left-0 mt-2 w-64 bg-[#0d1017] border border-zinc-800 rounded-2xl shadow-2xl p-3 flex flex-col gap-2 z-50 animate-in fade-in zoom-in-95 duration-100">
-                <Link
-                  href="/"
-                  onClick={() => setActiveMenu(null)}
-                  className="p-2.5 rounded-xl hover:bg-zinc-900/80 transition-colors flex items-start gap-3 text-left"
-                >
-                  <div className="p-1.5 rounded-lg bg-[#ff5a1f]/10 text-[#ff5a1f]">
-                    <Zap className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-white">Universal Clipboard</div>
-                    <div className="text-[11px] text-zinc-400">Sync text & code across all devices live.</div>
-                  </div>
-                </Link>
-
-                <div
-                  onClick={() => {
-                    handleCreateNew();
-                    setActiveMenu(null);
-                  }}
-                  className="p-2.5 rounded-xl hover:bg-zinc-900/80 transition-colors flex items-start gap-3 text-left cursor-pointer"
-                >
-                  <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400">
-                    <Layers className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-white">File Dropper</div>
-                    <div className="text-[11px] text-zinc-400">Direct cloud asset sharing without login.</div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Solutions Dropdown */}
-          <div className="relative group">
-            <Link
-              href="/solutions"
-              onClick={() => setActiveMenu(null)}
-              onMouseEnter={() => setActiveMenu('solutions')}
-              className="hover:text-[#ff5a1f] transition-colors py-2 flex items-center gap-1"
-            >
-              <span>Solutions</span>
-            </Link>
-
-            {activeMenu === 'solutions' && (
-              <div
-                onMouseLeave={() => setActiveMenu(null)}
-                className="absolute top-full left-0 mt-2 w-72 bg-[#0d1017] border border-zinc-800 rounded-2xl shadow-2xl p-3 flex flex-col gap-2 z-50 animate-in fade-in zoom-in-95 duration-100"
-              >
-                <Link
-                  href="/solutions#snap-ocr"
-                  onClick={() => setActiveMenu(null)}
-                  className="p-2.5 rounded-xl hover:bg-zinc-900/80 transition-colors flex items-start gap-3 text-left"
-                >
-                  <div className="p-1.5 rounded-lg bg-[#ff5a1f]/10 text-[#ff5a1f]">
-                    <Camera className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                      <span>Camera Snap & OCR</span>
-                      <span className="px-1.5 py-0.2 rounded bg-[#ff5a1f]/20 text-[#ff5a1f] text-[9px] uppercase font-bold">
-                        New
-                      </span>
-                    </div>
-                    <div className="text-[11px] text-zinc-400">
-                      Snap on phone, extract text on laptop.
-                    </div>
-                  </div>
-                </Link>
-
-                <Link
-                  href="/solutions"
-                  onClick={() => setActiveMenu(null)}
-                  className="p-2.5 rounded-xl hover:bg-zinc-900/80 transition-colors flex items-start gap-3 text-left"
-                >
-                  <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400">
-                    <QrCode className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-white">Mobile QR & Same-WiFi</div>
-                    <div className="text-[11px] text-zinc-400">Instant camera pairing without login.</div>
-                  </div>
-                </Link>
-
-                <Link
-                  href="/solutions"
-                  onClick={() => setActiveMenu(null)}
-                  className="p-2.5 rounded-xl hover:bg-zinc-900/80 transition-colors flex items-start gap-3 text-left"
-                >
-                  <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400">
-                    <Shield className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-white">Zero Account Privacy</div>
-                    <div className="text-[11px] text-zinc-400">Ephemeral room memory, no cookies.</div>
-                  </div>
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* Resources Dropdown */}
-          <div className="relative group">
-            <button
-              onClick={() => setActiveMenu(activeMenu === 'resources' ? null : 'resources')}
-              className="hover:text-[#ff5a1f] transition-colors py-2"
-            >
-              <span>Resources</span>
-            </button>
-
-            {activeMenu === 'resources' && (
-              <div className="absolute top-full left-0 mt-2 w-56 bg-[#0d1017] border border-zinc-800 rounded-2xl shadow-2xl p-3 flex flex-col gap-1 z-50 animate-in fade-in zoom-in-95 duration-100">
-                <Link
-                  href="/api/clip/status"
-                  onClick={() => setActiveMenu(null)}
-                  className="px-3 py-2 rounded-xl text-xs text-zinc-300 hover:bg-zinc-900 hover:text-white transition-colors"
-                >
-                  Edge Network Status
-                </Link>
-                <Link
-                  href="https://github.com"
-                  target="_blank"
-                  onClick={() => setActiveMenu(null)}
-                  className="px-3 py-2 rounded-xl text-xs text-zinc-300 hover:bg-zinc-900 hover:text-white transition-colors"
-                >
-                  GitHub Repository
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* This link */}
-          <Link
-            href="https://ai-code-navigator.vercel.app/"
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center justify-center py-2 transition-opacity hover:opacity-80"
-            aria-label="AKAZA"
-          >
-            <img
-              src="/Akaza.png"
-              alt="AKAZA"
-              className="h-6 w-auto object-contain"
-            />
+        {/* Center: Floating Unified Dark Pill */}
+        <nav
+          ref={dropdownRef}
+          className="hidden md:flex items-center gap-6 lg:gap-7 px-6 py-2 rounded-full bg-[#121316] border border-zinc-800/90 text-xs sm:text-sm text-zinc-400 font-medium relative shadow-inner"
+        >
+          <Link href="/" className="hover:text-white transition-colors">
+            Home
           </Link>
 
-        </nav>
-
-        {/* Right: Cloudflare-Style Action Buttons */}
-        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0" ref={dropdownRef}>
           <button
             onClick={handleCreateNew}
-            className="inline-flex items-center gap-1 sm:gap-2 rounded-full border border-zinc-700 bg-transparent px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium text-zinc-100 transition-colors hover:border-zinc-500 hover:bg-zinc-900 shrink-0"
+            className="hover:text-white transition-colors cursor-pointer"
           >
-            <span className="flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-[#ff5a1f] text-[9px] sm:text-[10px] font-bold text-white">+</span>
-            <span>New Room</span>
+            New Room
           </button>
 
-          {/* Dashboard Button (Pill style with Recent Rooms Dropdown) */}
-          <div className="relative shrink-0">
+          {/* Dashboard menu trigger */}
+          <div className="relative">
             <button
               onClick={() => setIsDashboardOpen(!isDashboardOpen)}
-              className="px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full border border-zinc-700 hover:border-zinc-500 bg-transparent text-[11px] sm:text-xs text-zinc-100 font-medium hover:bg-zinc-900 transition-all flex items-center gap-1 sm:gap-1.5 shrink-0"
+              className="hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <span>Dashboard</span>
               {currentRoom && (
@@ -276,9 +127,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoom, onOpenQR, isSyncing
               )}
             </button>
 
-            {/* Dashboard Rooms Dropdown Menu */}
+            {/* Dashboard Dropdown */}
             {isDashboardOpen && (
-              <div className="absolute top-full right-0 mt-2 w-72 bg-[#0c0f17] border border-zinc-800 rounded-2xl shadow-2xl p-3 flex flex-col gap-2.5 z-50 animate-in fade-in zoom-in-95 duration-100">
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-72 bg-[#0c0f17] border border-zinc-800 rounded-2xl shadow-2xl p-3 flex flex-col gap-2.5 z-50 animate-in fade-in zoom-in-95 duration-100 text-left">
                 <div className="flex items-center justify-between px-1 text-[11px] font-mono text-zinc-400 uppercase tracking-wider">
                   <span className="flex items-center gap-1.5">
                     <FolderKanban className="w-3.5 h-3.5 text-[#ff5a1f]" />
@@ -326,10 +177,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoom, onOpenQR, isSyncing
                               router.push(`/clip/${room}`);
                               setIsDashboardOpen(false);
                             }}
-                            className={`w-full px-2.5 py-1.5 rounded-lg text-xs text-left font-mono flex items-center justify-between transition-colors ${currentRoom === room
-                              ? 'bg-[#ff5a1f]/15 text-[#ff7a45] font-semibold border border-[#ff5a1f]/30'
-                              : 'text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200'
-                              }`}
+                            className={`w-full px-2.5 py-1.5 rounded-lg text-xs text-left font-mono flex items-center justify-between transition-colors ${
+                              currentRoom === room
+                                ? 'bg-[#ff5a1f]/15 text-[#ff7a45] font-semibold border border-[#ff5a1f]/30'
+                                : 'text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200'
+                            }`}
                           >
                             <span className="truncate">{room}</span>
                             {currentRoom === room && <span className="text-[10px] text-[#ff5a1f] font-sans">Active</span>}
@@ -353,6 +205,68 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoom, onOpenQR, isSyncing
               </div>
             )}
           </div>
+
+          <Link
+            href="https://ai-code-navigator.vercel.app/"
+            target="_blank"
+            rel="noreferrer"
+            className="hover:text-white transition-colors"
+          >
+            AKAZA
+          </Link>
+
+          <Link
+            href="https://github.com"
+            target="_blank"
+            rel="noreferrer"
+            className="hover:text-white transition-colors flex items-center gap-1.5"
+          >
+            <Github className="w-3.5 h-3.5" />
+            <span>GitHub</span>
+          </Link>
+        </nav>
+
+
+        {/* Right Action container */}
+        <div className="flex items-center gap-2 shrink-0">
+
+          {authUser ? (
+            <div className="flex items-center gap-2">
+              {authUser.role === 'admin' && (
+                <Link
+                  href="/admin"
+                  className="px-3 py-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-mono font-medium flex items-center gap-1 transition-colors"
+                  title="Admin Access Control Panel"
+                >
+                  <Shield className="w-3 h-3 text-amber-400" />
+                  <span className="hidden sm:inline">Admin</span>
+                </Link>
+              )}
+
+              <div className="flex items-center gap-2 bg-white text-black rounded-full px-4 py-1.5 text-xs font-bold tracking-tight shadow-md">
+                <span className="truncate max-w-[80px] sm:max-w-[120px]">{authUser.username}</span>
+                <button
+                  onClick={async () => {
+                    await fetch('/api/auth/logout', { method: 'POST' });
+                    setAuthUser(null);
+                    router.push('/login');
+                    router.refresh();
+                  }}
+                  title="Log Out"
+                  className="text-zinc-600 hover:text-red-600 transition-colors ml-0.5"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className="px-5 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-bold text-xs sm:text-sm tracking-tight transition-all shadow-md active:scale-95"
+            >
+              Login
+            </Link>
+          )}
         </div>
       </div>
     </header>

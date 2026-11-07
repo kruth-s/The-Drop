@@ -4,6 +4,7 @@ import { getActivePresence } from '@/lib/presence';
 import { APIResponse, ClipboardRoom } from '@/lib/types';
 
 import { getShuffledPhrasesWithDecoys, encodeVaultCipher } from '@/lib/privateVault';
+import { getSession, recordUserAccess, recordUserCreatedRoom } from '@/lib/auth';
 
 export async function GET(
   request: NextRequest,
@@ -19,6 +20,7 @@ export async function GET(
     }
 
     let room = await getClipboard(slug);
+    const isNewRoom = !room;
 
     if (!room) {
       // Create empty room if it doesn't exist yet
@@ -26,6 +28,19 @@ export async function GET(
         mainContent: '',
         snippets: [],
       });
+    }
+
+    // Record user activity (rooms accessed & rooms created)
+    const sessionId = request.cookies.get('drop_session_id')?.value;
+    if (sessionId) {
+      getSession(sessionId).then((session) => {
+        if (session) {
+          recordUserAccess(session.username, slug).catch(() => {});
+          if (isNewRoom) {
+            recordUserCreatedRoom(session.username, slug).catch(() => {});
+          }
+        }
+      }).catch(() => {});
     }
 
     // Attach currently active devices

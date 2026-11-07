@@ -7,6 +7,7 @@ import {
   encodeVaultCipher,
 } from '@/lib/privateVault';
 import { APIResponse } from '@/lib/types';
+import { getSession, recordUserCreatedRoom } from '@/lib/auth';
 
 export async function GET(
   request: NextRequest,
@@ -138,6 +139,16 @@ export async function POST(
         isPrivate: true,
         privateWords,
       });
+
+      // Record room creation for user activity
+      const sessionId = request.cookies.get('drop_session_id')?.value;
+      if (sessionId) {
+        getSession(sessionId).then((session) => {
+          if (session) {
+            recordUserCreatedRoom(session.username, slug).catch(() => {});
+          }
+        }).catch(() => {});
+      }
 
       const isUpgraded = Boolean(
         existing &&

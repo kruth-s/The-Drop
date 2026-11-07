@@ -63,8 +63,7 @@ function Globe() {
   const tilt15Deg = 15 * (Math.PI / 180);
 
   return (
-    // Outer Group fixed at 15-degree slant
-    <group rotation={[tilt15Deg, 0, -tilt15Deg]} scale={0.78}>
+    <group rotation={[tilt15Deg, 0, -tilt15Deg]} scale={0.66}>
       {/* Inner Group rotating smoothly around the 15° tilted axis */}
       <group ref={innerGlobeRef}>
         {/* Dark Earth Base */}
@@ -80,21 +79,10 @@ function Globe() {
         <mesh>
           <sphereGeometry args={[2.512, 32, 32]} />
           <meshBasicMaterial
-            color="#222222"
+            color="#333333"
             wireframe={true}
             transparent={true}
-            opacity={0.35}
-          />
-        </mesh>
-
-        {/* Outer subtle atmospheric glow */}
-        <mesh>
-          <sphereGeometry args={[2.56, 48, 48]} />
-          <meshBasicMaterial
-            color="#ff5a1f"
-            transparent={true}
-            opacity={0.03}
-            side={THREE.BackSide}
+            opacity={0.45}
           />
         </mesh>
 
@@ -108,8 +96,8 @@ export default function GlobeScene() {
     <div className="w-full h-full relative cursor-grab active:cursor-grabbing select-none">
       <Canvas
         camera={{
-          position: [0, 0, 6.4],
-          fov: 40,
+          position: [0, 0, 7.0],
+          fov: 42,
         }}
         dpr={[1, 2]}
         gl={{ antialias: true, alpha: true }}

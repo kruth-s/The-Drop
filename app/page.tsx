@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Toast, ToastMessage } from '@/components/Toast';
 import { Navbar } from '@/components/Navbar';
 import { PrivateRoomChallengeModal } from '@/components/PrivateRoomChallengeModal';
@@ -16,6 +16,9 @@ import {
   ShieldCheck,
   AlertTriangle,
   X,
+  Box,
+  Key,
+  Users,
 } from 'lucide-react';
 
 // Dynamic import with SSR disabled for Three.js Canvas
@@ -54,6 +57,17 @@ export default function HomePage() {
   const [privacyWarningOptions, setPrivacyWarningOptions] = useState<string[]>([]);
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const error = searchParams.get('error');
+    const room = searchParams.get('room');
+    if (error === 'no_room_access') {
+      addToast(`Access Restricted: Your account does not have permission for room '/${room}'. Ask Admin for access.`, 'error');
+    } else if (error === 'forbidden') {
+      addToast('Access Denied: Administrator role required.', 'error');
+    }
+  }, [searchParams]);
 
   const addToast = (text: string, type: 'success' | 'error' | 'info' = 'info') => {
     const id = Math.random().toString(36).substring(2, 9);
@@ -154,19 +168,16 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen w-full max-w-[100vw] overflow-x-hidden flex flex-col justify-between bg-[#111111] text-zinc-100 font-sans selection:bg-[#ff5a1f]/30 selection:text-[#ff5a1f]">
+    <div className="min-h-screen w-full max-w-[100vw] overflow-x-hidden flex flex-col justify-between bg-black text-zinc-100 font-sans selection:bg-[#ff5a1f]/30 selection:text-[#ff5a1f] relative">
       <Navbar />
 
       {/* Cloudflare-style Globe Hero Section */}
-      <section className="relative flex-1 min-h-[calc(100dvh-56px)] sm:min-h-[calc(100vh-80px)] w-full max-w-[100vw] overflow-hidden flex flex-col items-center justify-start pt-1 sm:pt-4 pb-6 sm:pb-8 px-3 sm:px-6">
-        {/* Subtle background glow */}
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[500px] h-[350px] bg-[#ff5a1f]/10 blur-[140px] rounded-full pointer-events-none -z-10" />
-
+      <section className="relative z-10 flex-1 min-h-[calc(100dvh-56px)] sm:min-h-[calc(100vh-80px)] w-full max-w-[100vw] overflow-hidden flex flex-col items-center justify-between pt-1 sm:pt-4 pb-6 sm:pb-8">
         {/* Hero Content Wrapper containing Headline + 3D Globe */}
         <div className="relative w-full max-w-6xl h-[440px] sm:h-auto flex flex-col items-center text-center px-2 pt-1 sm:pt-2">
           {/* Small brand statement */}
           <div
-            className="mb-1 sm:mb-2 text-[10px] font-semibold uppercase tracking-[0.45em] text-neutral-500 sm:text-xs"
+            className="relative z-30 mb-1 sm:mb-2 text-[10px] font-semibold uppercase tracking-[0.45em] text-neutral-400 sm:text-xs"
             style={{ fontFamily: 'var(--font-display), sans-serif' }}
           >
             In The Night
@@ -195,29 +206,29 @@ export default function HomePage() {
           </p>
 
           {/* 3D Dotted Rotating & Draggable Globe Canvas */}
-          <div className="absolute left-1/2 top-[65px] sm:top-[95px] h-[375px] w-[375px] sm:h-[500px] sm:w-[500px] lg:h-[580px] lg:w-[580px] -translate-x-1/2 pointer-events-auto z-10 max-w-[98vw] overflow-hidden">
+          <div className="absolute left-1/2 top-[-70px] sm:top-[-60px] lg:top-[-50px] h-[520px] sm:h-[680px] lg:h-[760px] w-full max-w-[1200px] -translate-x-1/2 pointer-events-auto z-10 overflow-visible">
             <GlobeScene />
           </div>
         </div>
 
         {/* =========================================================================
-            BOTTOM ACTION CARDS: LEFT (PRIVATE ROOM) & RIGHT (NORMAL ROOM)
+            BOTTOM ACTION CARDS: EXTREME LEFT (PRIVATE ROOM) & EXTREME RIGHT (STANDARD ROOM)
             ========================================================================= */}
-        <div className="w-full max-w-6xl flex flex-col sm:flex-row items-stretch sm:items-end justify-between gap-4 mt-6 sm:mt-auto sm:mb-2 z-30 pointer-events-none">
-          {/* 1. NEW BOX: LEFT BOTTOM - OPEN PRIVATE ROOM */}
-          <div className="pointer-events-auto w-full sm:w-[26rem] lg:w-[29rem] bg-zinc-900/95 border border-emerald-500/30 hover:border-emerald-500/50 rounded-2xl sm:rounded-[2rem] p-2.5 sm:p-3 shadow-2xl backdrop-blur-xl transition-all shadow-[0_10px_35px_rgba(16,185,129,0.08)]">
-            <div className="flex items-center justify-between px-2 pt-1 pb-2">
-              <div className="flex items-center gap-1.5 text-emerald-400">
+        <div className="w-full px-4 sm:px-8 lg:px-12 flex flex-col sm:flex-row items-stretch sm:items-end justify-between gap-4 mt-6 sm:mt-auto sm:mb-2 z-30 pointer-events-none">
+          {/* 1. LEFT BOTTOM - OPEN PRIVATE ROOM */}
+          <div className="pointer-events-auto w-full sm:w-[26rem] lg:w-[29rem] bg-zinc-950/85 border border-[#00f5a0]/40 rounded-2xl sm:rounded-[2rem] p-3 shadow-2xl backdrop-blur-xl transition-all shadow-[0_0_35px_rgba(0,245,160,0.06)]">
+            <div className="flex items-center justify-between px-2 pt-0.5 pb-2.5">
+              <div className="flex items-center gap-1.5 text-[#00f5a0]">
                 <Lock className="w-3.5 h-3.5" />
                 <span
-                  className="text-xs font-semibold uppercase tracking-wider"
+                  className="text-xs font-bold uppercase tracking-wider"
                   style={{ fontFamily: 'var(--font-display), sans-serif' }}
                 >
-                  Open Private room
+                  OPEN PRIVATE ROOM
                 </span>
               </div>
-              <span className="text-[10px] font-mono text-zinc-500 bg-zinc-950 px-2 py-0.5 rounded-full border border-zinc-800">
-                3-Phrase CTF Lock
+              <span className="text-[10px] font-mono text-zinc-400 bg-zinc-950 px-2.5 py-0.5 rounded-full border border-zinc-800 uppercase">
+                3-PHASE CTF LOCK
               </span>
             </div>
 
@@ -225,38 +236,44 @@ export default function HomePage() {
               onSubmit={handleOpenPrivate}
               className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5 w-full"
             >
-              <input
-                type="text"
-                placeholder="Private room name"
-                value={privateRoom}
-                onChange={(e) => setPrivateRoom(e.target.value)}
-                className="flex-1 px-3.5 py-2.5 rounded-xl sm:rounded-2xl bg-zinc-950 border border-zinc-800 text-zinc-100 placeholder:text-zinc-600 text-sm font-medium tracking-[0.02em] focus:outline-none focus:border-emerald-500/70 transition-colors"
-                style={{ fontFamily: 'var(--font-display), sans-serif' }}
-              />
+              <div className="relative flex-1">
+                <Box className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Private room name"
+                  value={privateRoom}
+                  onChange={(e) => setPrivateRoom(e.target.value)}
+                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl sm:rounded-2xl bg-zinc-950 border border-zinc-800 text-zinc-100 placeholder:text-zinc-600 text-sm font-medium tracking-[0.02em] focus:outline-none focus:border-[#00f5a0]/70 transition-colors"
+                  style={{ fontFamily: 'var(--font-display), sans-serif' }}
+                />
+              </div>
 
               <button
                 type="submit"
                 disabled={isLoadingPrivate}
-                className="px-4 py-2.5 rounded-xl sm:rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs sm:text-sm font-bold tracking-[0.02em] transition-all flex items-center justify-center gap-1.5 shrink-0 shadow-lg shadow-emerald-500/20 hover:scale-[1.02] cursor-pointer"
+                className="px-4 py-2.5 rounded-xl sm:rounded-2xl bg-[#00f5a0] hover:bg-[#00df90] text-black text-xs sm:text-sm font-extrabold tracking-[0.02em] transition-all flex items-center justify-center gap-1.5 shrink-0 shadow-lg shadow-[#00f5a0]/25 hover:scale-[1.02] cursor-pointer"
                 style={{ fontFamily: 'var(--font-display), sans-serif' }}
               >
-                <KeyRound className="w-3.5 h-3.5" />
-                <span>{isLoadingPrivate ? 'Opening...' : 'Open Private room'}</span>
+                <Key className="w-3.5 h-3.5" />
+                <span>{isLoadingPrivate ? 'Opening...' : 'Open Private Room'}</span>
               </button>
             </form>
           </div>
 
-          {/* 2. EXISTING BOX: RIGHT BOTTOM - NORMAL ROOM */}
-          <div className="pointer-events-auto w-full sm:w-[26rem] lg:w-[29rem] bg-zinc-900/95 border border-zinc-800 hover:border-zinc-700 rounded-2xl sm:rounded-[2rem] p-2.5 sm:p-3 shadow-2xl backdrop-blur-xl transition-all">
-            <div className="flex items-center justify-between px-2 pt-1 pb-2">
-              <span
-                className="text-xs font-semibold uppercase tracking-wider text-neutral-400"
-                style={{ fontFamily: 'var(--font-display), sans-serif' }}
-              >
-                Standard Room
-              </span>
-              <span className="text-[10px] font-mono text-zinc-500 bg-zinc-950 px-2 py-0.5 rounded-full border border-zinc-800">
-                Instant Access
+          {/* 2. RIGHT BOTTOM - STANDARD ROOM */}
+          <div className="pointer-events-auto w-full sm:w-[26rem] lg:w-[29rem] bg-zinc-950/85 border border-zinc-800 rounded-2xl sm:rounded-[2rem] p-3 shadow-2xl backdrop-blur-xl transition-all">
+            <div className="flex items-center justify-between px-2 pt-0.5 pb-2.5">
+              <div className="flex items-center gap-1.5 text-zinc-300">
+                <Users className="w-3.5 h-3.5 text-zinc-400" />
+                <span
+                  className="text-xs font-bold uppercase tracking-wider text-white"
+                  style={{ fontFamily: 'var(--font-display), sans-serif' }}
+                >
+                  STANDARD ROOM
+                </span>
+              </div>
+              <span className="text-[10px] font-mono text-zinc-400 bg-zinc-950 px-2.5 py-0.5 rounded-full border border-zinc-800 uppercase">
+                INSTANT ACCESS
               </span>
             </div>
 
@@ -264,19 +281,22 @@ export default function HomePage() {
               onSubmit={handleOpenCustom}
               className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5 w-full"
             >
-              <input
-                type="text"
-                placeholder="Enter room name"
-                value={customRoom}
-                onChange={(e) => setCustomRoom(e.target.value)}
-                className="flex-1 px-3.5 py-2.5 rounded-xl sm:rounded-2xl bg-zinc-950 border border-zinc-800 text-zinc-100 placeholder:text-zinc-500 text-sm font-medium tracking-[0.02em] focus:outline-none focus:border-[#ff5a1f]/70 transition-colors"
-                style={{ fontFamily: 'var(--font-display), sans-serif' }}
-              />
+              <div className="relative flex-1">
+                <Box className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Enter room name"
+                  value={customRoom}
+                  onChange={(e) => setCustomRoom(e.target.value)}
+                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl sm:rounded-2xl bg-zinc-950 border border-zinc-800 text-zinc-100 placeholder:text-zinc-500 text-sm font-medium tracking-[0.02em] focus:outline-none focus:border-[#ff5a1f]/70 transition-colors"
+                  style={{ fontFamily: 'var(--font-display), sans-serif' }}
+                />
+              </div>
 
               <button
                 type="submit"
                 disabled={isLoadingNormal}
-                className="px-4 py-2.5 rounded-xl sm:rounded-2xl bg-[#ff5a1f] hover:bg-[#ff6d36] text-white text-xs sm:text-sm font-semibold tracking-[0.02em] transition-all flex items-center justify-center gap-1.5 shrink-0 shadow-lg shadow-[#ff5a1f]/20 hover:scale-[1.02] cursor-pointer"
+                className="px-5 py-2.5 rounded-xl sm:rounded-2xl bg-[#ff5a1f] hover:bg-[#ff6d36] text-white text-xs sm:text-sm font-bold tracking-[0.02em] transition-all flex items-center justify-center gap-1.5 shrink-0 shadow-lg shadow-[#ff5a1f]/20 hover:scale-[1.02] cursor-pointer"
                 style={{ fontFamily: 'var(--font-display), sans-serif' }}
               >
                 <span>{isLoadingNormal ? 'Checking...' : 'Open room'}</span>
