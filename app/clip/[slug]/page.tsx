@@ -50,8 +50,8 @@ export default function ClipRoomPage() {
     vaultWords && vaultWords.length > 0
       ? vaultWords
       : vaultCipher
-      ? decodeVaultCipher(vaultCipher)
-      : (roomData?.privateWords || []);
+        ? decodeVaultCipher(vaultCipher)
+        : (roomData?.privateWords || []);
 
   const clientDeviceRef = useRef<Omit<DevicePresence, 'lastSeen'> | null>(null);
   const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -133,7 +133,7 @@ export default function ClipRoomPage() {
           const updated = [slug, ...list.filter((s) => s !== slug)].slice(0, 10);
           localStorage.setItem('the_drop_recent_rooms', JSON.stringify(updated));
         }
-      } catch (e) {}
+      } catch (e) { }
     }
   }, [slug]);
 
@@ -176,7 +176,7 @@ export default function ClipRoomPage() {
         fetch(`/api/clip/${slug}/presence?deviceId=${clientDevice.deviceId}`, {
           method: 'DELETE',
           keepalive: true,
-        }).catch(() => {});
+        }).catch(() => { });
       }
     };
   }, [clientDevice, sendPresenceHeartbeat, slug]);
@@ -273,7 +273,7 @@ export default function ClipRoomPage() {
             }
             setSnippets(payload.room.snippets || []);
           }
-        } catch {}
+        } catch { }
       });
 
       es.addEventListener('live_typing', (e: MessageEvent) => {
@@ -391,12 +391,13 @@ export default function ClipRoomPage() {
           senderColor: devColor,
         }),
       });
-    } catch {}
+    } catch { }
   };
 
   // Save updated room state to server
   const persistRoomState = async (
     newMainContent: string,
+    newSnippets: ClipItem[]
     newSnippets: ClipItem[]
   ) => {
     setIsSaving(true);
@@ -452,6 +453,7 @@ export default function ClipRoomPage() {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
       persistRoomState(val, snippets);
+      persistRoomState(val, snippets);
     }, 600);
   };
 
@@ -467,12 +469,14 @@ export default function ClipRoomPage() {
     const updated = [newItem, ...snippets];
     setSnippets(updated);
     persistRoomState(mainContent, updated);
+    persistRoomState(mainContent, updated);
   };
 
   // Delete snippet card
   const handleDeleteSnippet = (id: string) => {
     const updated = snippets.filter((s) => s.id !== id);
     setSnippets(updated);
+    persistRoomState(mainContent, updated);
     persistRoomState(mainContent, updated);
     addToast('Snippet removed', 'info');
   };
