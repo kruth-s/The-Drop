@@ -88,21 +88,23 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoom, onOpenQR, isSyncing
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-black text-zinc-100 select-none">
+    <header className="sticky top-0 z-50 w-full bg-black/75 backdrop-blur-xl text-zinc-100 select-none transition-all">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 h-16 flex items-center justify-between gap-4">
 
-        {/* Left: Brand Logo & Wordmark (Hollow ring circle + text, matching reference image) */}
-        <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-          <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-white group-hover:border-[#ff5a1f] transition-colors flex items-center justify-center shrink-0" />
-          <span className="font-extrabold tracking-wider text-sm sm:text-base text-white group-hover:text-zinc-200 transition-colors uppercase">
-            THE DROP
+        {/* Left: Brand Wordmark (Matching Login Page & Brand Reference) */}
+        <Link href="/" className="flex items-center shrink-0 group">
+          <span
+            className="text-lg sm:text-xl font-black uppercase tracking-wider text-white group-hover:opacity-95 transition-opacity"
+            style={{ fontFamily: 'var(--font-display), sans-serif' }}
+          >
+            THE <span className="text-[#ff5a1f] drop-shadow-[0_0_12px_rgba(255,90,31,0.4)]">DROP</span>
           </span>
         </Link>
 
-        {/* Center: Floating Unified Dark Pill */}
+        {/* Center: Floating Modern Glassmorphism Nav Pill */}
         <nav
           ref={dropdownRef}
-          className="hidden md:flex items-center gap-6 lg:gap-7 px-6 py-2 rounded-full bg-[#121316] border border-zinc-800/90 text-xs sm:text-sm text-zinc-400 font-medium relative shadow-inner"
+          className="hidden md:flex items-center gap-6 lg:gap-7 px-6 py-2 rounded-full bg-zinc-950/80 border border-zinc-800/90 text-xs sm:text-[13px] text-zinc-400 font-medium tracking-wide relative shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-xl"
         >
           <Link href="/" className="hover:text-white transition-colors">
             Home
@@ -235,7 +237,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoom, onOpenQR, isSyncing
               {authUser.role === 'admin' && (
                 <Link
                   href="/admin"
-                  className="px-3 py-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-mono font-medium flex items-center gap-1 transition-colors"
+                  className="px-3.5 py-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-mono font-semibold flex items-center gap-1.5 transition-all shadow-sm"
                   title="Admin Access Control Panel"
                 >
                   <Shield className="w-3 h-3 text-amber-400" />
@@ -243,7 +245,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoom, onOpenQR, isSyncing
                 </Link>
               )}
 
-              <div className="flex items-center gap-2 bg-white text-black rounded-full px-4 py-1.5 text-xs font-bold tracking-tight shadow-md">
+              <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 text-zinc-200 rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide shadow-md">
                 <span className="truncate max-w-[80px] sm:max-w-[120px]">{authUser.username}</span>
                 <button
                   onClick={async () => {
@@ -253,7 +255,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoom, onOpenQR, isSyncing
                     router.refresh();
                   }}
                   title="Log Out"
-                  className="text-zinc-600 hover:text-red-600 transition-colors ml-0.5"
+                  className="text-zinc-500 hover:text-red-400 transition-colors ml-0.5"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                 </button>
@@ -262,7 +264,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoom, onOpenQR, isSyncing
           ) : (
             <Link
               href="/login"
-              className="px-5 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-bold text-xs sm:text-sm tracking-tight transition-all shadow-md active:scale-95"
+              className="px-5 py-2 rounded-full bg-white hover:bg-zinc-100 text-zinc-950 font-black text-xs uppercase tracking-wider transition-all shadow-[0_2px_14px_rgba(255,255,255,0.18)] hover:scale-105 active:scale-95"
+              style={{ fontFamily: 'var(--font-display), sans-serif' }}
             >
               Login
             </Link>

@@ -9,7 +9,13 @@ interface SessionData {
   expiresAt: number;
 }
 
-const PUBLIC_PATHS = ['/login', '/api/auth/login'];
+const PUBLIC_PATHS = [
+  '/',
+  '/login',
+  '/api/auth/login',
+  '/api/auth/me',
+  '/api/clip',
+];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -28,7 +34,9 @@ export async function middleware(request: NextRequest) {
   }
 
   const sessionId = request.cookies.get('drop_session_id')?.value;
-  const isPublicPath = PUBLIC_PATHS.some((path) => pathname === path || pathname.startsWith(path + '/'));
+  const isPublicPath =
+    pathname === '/' ||
+    PUBLIC_PATHS.some((path) => path !== '/' && (pathname === path || pathname.startsWith(path + '/')));
 
   // 2. Fetch session from Upstash Redis if configured
   const redisUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;

@@ -15,67 +15,42 @@ export const ANIME_SERIES: AnimeSeries[] = [
   {
     id: 'one-piece',
     name: 'One Piece',
-    characters: ['luffy', 'zoro', 'nami', 'sanji', 'usopp', 'robin'],
+    characters: ['luffy', 'zoro', 'sanji', 'robin', 'pluton', 'loki'],
   },
   {
     id: 'demon-slayer',
     name: 'Demon Slayer',
-    characters: ['nezuko', 'giyu', 'muzan', 'akaza', 'kanao', 'tengen'],
+    characters: ['tanijiro', 'giyu', 'muzan', 'akaza', 'rengoku', 'mushiro'],
   },
   {
     id: 'attack-on-titan',
     name: 'Attack on Titan',
-    characters: ['eren', 'mikasa', 'armin', 'levi', 'reiner', 'sasha'],
+    characters: ['eren', 'mikasa', 'armin', 'levi', 'reiner'],
   },
   {
     id: 'death-note',
     name: 'Death Note',
-    characters: ['light', 'ryuk', 'misa', 'near', 'mello', 'mikami'],
+    characters: ['light', 'ryuk', 'misa', 'near', 'L'],
   },
   {
     id: 'bleach',
     name: 'Bleach',
-    characters: ['ichigo', 'rukia', 'renji', 'uryu', 'aizen', 'chad'],
-  },
-  {
-    id: 'apothecary-diaries',
-    name: 'The Apothecary Diaries',
-    characters: ['maomao', 'jinshi', 'lihaku', 'lihua', 'lishu', 'lakan'],
+    characters: ['ichigo', 'rukia', 'renji', 'aizen'],
   },
   {
     id: 'solo-leveling',
     name: 'Solo Leveling',
-    characters: ['jinwoo', 'jinho', 'chaein', 'juhee', 'gunhee', 'jinah'],
+    characters: ['jinwoo', 'jinho', 'chaein', 'jinah'],
   },
   {
     id: 'jujutsu-kaisen',
     name: 'Jujutsu Kaisen',
-    characters: ['yuji', 'megumi', 'nobara', 'gojo', 'sukuna', 'maki'],
-  },
-  {
-    id: 'dandadan',
-    name: 'Dan Da Dan',
-    characters: ['momo', 'okarun', 'seiko', 'aira', 'jiji', 'zuma'],
-  },
-  {
-    id: 'blue-box',
-    name: 'Blue Box',
-    characters: ['taiki', 'hina', 'haryu', 'ayame', 'karen', 'nagisa'],
+    characters: ['yuji', 'megumi', 'gojo', 'sukuna', 'maki'],
   },
   {
     id: 'sakamoto-days',
     name: 'Sakamoto Days',
-    characters: ['taro', 'shin', 'nagumo', 'gaku', 'uzuki', 'osari'],
-  },
-  {
-    id: 'classroom-of-the-elite',
-    name: 'Classroom of the Elite',
-    characters: ['suzune', 'kikyo', 'honami', 'arisu', 'ryuen', 'hirata'],
-  },
-  {
-    id: 'wistoria',
-    name: 'Wistoria: Wand and Sword',
-    characters: ['will', 'sion', 'julius', 'rosti', 'kiki', 'edward'],
+    characters: ['sakamoto', 'osaragi', 'nagumo', 'takamura', 'uzuki', 'shishiba'],
   },
 ];
 

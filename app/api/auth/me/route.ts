@@ -5,12 +5,12 @@ export async function GET(request: NextRequest) {
   try {
     const sessionId = request.cookies.get('drop_session_id')?.value;
     if (!sessionId) {
-      return NextResponse.json({ success: false, authenticated: false }, { status: 401 });
+      return NextResponse.json({ success: true, authenticated: false, user: null });
     }
 
     const session = await getSession(sessionId);
     if (!session) {
-      const response = NextResponse.json({ success: false, authenticated: false }, { status: 401 });
+      const response = NextResponse.json({ success: true, authenticated: false, user: null });
       response.cookies.delete('drop_session_id');
       return response;
     }

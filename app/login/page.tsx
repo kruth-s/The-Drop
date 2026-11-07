@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Lock, KeyRound, User, ArrowRight, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { KeyRound, User, ArrowRight, AlertCircle, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { SecurityGatekeeper } from '@/components/SecurityGatekeeper';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -14,13 +16,12 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isShake, setIsShake] = useState(false);
+  const [focusedField, setFocusedField] = useState<'username' | 'password' | null>(null);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!username.trim() || !password.trim()) {
       setErrorMessage('Please enter both username and password');
-      triggerShake();
       return;
     }
 
@@ -40,24 +41,16 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (data.success) {
-        // Successful login -> redirect to destination
         router.push(from);
         router.refresh();
       } else {
         setErrorMessage(data.error || 'Invalid credentials. Access denied.');
-        triggerShake();
       }
     } catch (err: any) {
       setErrorMessage('Network error during authentication. Please retry.');
-      triggerShake();
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const triggerShake = () => {
-    setIsShake(true);
-    setTimeout(() => setIsShake(false), 500);
   };
 
   return (
@@ -67,37 +60,34 @@ export default function LoginPage() {
       <div className="absolute bottom-10 left-10 w-[300px] h-[300px] bg-emerald-500/5 blur-[120px] rounded-full pointer-events-none -z-10" />
 
       <div
-        className={`w-full max-w-md bg-zinc-900/90 border border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl relative transition-all ${
-          isShake ? 'animate-bounce' : ''
-        }`}
+        className="w-full max-w-md bg-zinc-900/90 border border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl relative"
         style={{
           boxShadow: '0 0 50px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
         }}
       >
-        {/* Brand header */}
-        <div className="flex flex-col items-center text-center mb-7">
-          <div className="w-14 h-14 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center text-[#ff5a1f] shadow-lg shadow-[#ff5a1f]/10 mb-3">
-            <Lock className="w-7 h-7" />
-          </div>
-
-          <div
-            className="text-[10px] font-semibold uppercase tracking-[0.4em] text-neutral-500 mb-1"
-            style={{ fontFamily: 'var(--font-display), sans-serif' }}
+        {/* Top bar with Back to Home button */}
+        <div className="flex items-center justify-between mb-4">
+          <Link
+            href="/"
+            className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-200 transition-colors py-1 px-2.5 -ml-2 rounded-lg hover:bg-zinc-800/60"
           >
-            Controlled System Gate
-          </div>
-
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Home</span>
+          </Link>
           <h1
-            className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white"
+            className="text-xl font-black uppercase tracking-tight text-white pr-2"
             style={{ fontFamily: 'var(--font-display), sans-serif' }}
           >
             THE <span className="text-[#ff5a1f]">DROP</span>
           </h1>
-
-          <p className="text-xs text-zinc-400 mt-2 max-w-xs leading-relaxed">
-            Authorized access only. Enter your approved credentials to access clipboard rooms and synchronization.
-          </p>
         </div>
+
+        {/* Animated Funny Security Gatekeeper */}
+        <SecurityGatekeeper
+          focusedField={focusedField}
+          showPassword={showPassword}
+          isError={Boolean(errorMessage)}
+        />
 
         {/* Error message banner */}
         {errorMessage && (
@@ -122,6 +112,8 @@ export default function LoginPage() {
                 autoFocus
                 placeholder="Enter username"
                 value={username}
+                onFocus={() => setFocusedField('username')}
+                onBlur={() => setFocusedField(null)}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-100 placeholder:text-zinc-600 text-sm font-medium tracking-[0.02em] focus:outline-none focus:border-[#ff5a1f]/70 transition-colors"
               />
@@ -140,13 +132,17 @@ export default function LoginPage() {
                 type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
                 value={password}
+                onFocus={() => setFocusedField('password')}
+                onBlur={() => setFocusedField(null)}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full pl-10 pr-11 py-3 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-100 placeholder:text-zinc-600 text-sm font-medium tracking-[0.02em] focus:outline-none focus:border-[#ff5a1f]/70 transition-colors"
               />
               <button
                 type="button"
+                onMouseDown={(e) => e.preventDefault()}
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-zinc-500 hover:text-zinc-300"
+                title={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -159,7 +155,7 @@ export default function LoginPage() {
             className="w-full mt-2 py-3.5 px-5 rounded-xl bg-[#ff5a1f] hover:bg-[#ff6d36] text-white text-sm font-bold tracking-[0.02em] transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#ff5a1f]/20 hover:scale-[1.01] active:scale-[0.99] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ fontFamily: 'var(--font-display), sans-serif' }}
           >
-            <span>{isLoading ? 'Verifying...' : 'Log In to System'}</span>
+            <span>{isLoading ? 'Verifying with Gatekeeper...' : 'Enter System'}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </form>
