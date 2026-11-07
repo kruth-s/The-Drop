@@ -398,7 +398,6 @@ export default function ClipRoomPage() {
   const persistRoomState = async (
     newMainContent: string,
     newSnippets: ClipItem[]
-    newSnippets: ClipItem[]
   ) => {
     setIsSaving(true);
     try {

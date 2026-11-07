@@ -485,7 +485,6 @@ export const ClipEditor: React.FC<ClipEditorProps> = ({
             onClick={handlePasteFromClipboard}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 text-xs font-semibold transition-colors"
             title="Paste text from clipboard"
-            title="Paste text from clipboard"
           >
             <ClipboardPaste className="w-3.5 h-3.5 text-indigo-400" />
             <span>Paste</span>
