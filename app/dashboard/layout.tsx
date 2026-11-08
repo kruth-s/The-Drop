@@ -175,16 +175,16 @@ export default function DashboardLayout({
         className={`${
           mobileMenuOpen ? 'fixed inset-0 z-50 flex flex-col bg-[#0a0b10] p-6' : 'hidden'
         } md:flex ${
-          isCollapsed ? 'md:w-20 p-3' : 'md:w-72 p-5'
+          isCollapsed ? 'md:w-16 p-2.5' : 'md:w-[216px] p-3.5'
         } md:shrink-0 md:flex-col md:sticky md:top-0 md:h-screen bg-[#0a0b10] border-r border-zinc-800/60 justify-between transition-all duration-300 ease-in-out`}
       >
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-4">
           {/* Brand & Platform Identifier + Desktop Toggle */}
-          <div className={`flex items-center ${isCollapsed ? 'justify-center flex-col gap-2' : 'justify-between'} pb-4 border-b border-zinc-800/60`}>
+          <div className={`flex items-center ${isCollapsed ? 'justify-center flex-col gap-2' : 'justify-between'} pb-3 border-b border-zinc-800/60`}>
             {!isCollapsed ? (
               <Link href="/" className="group flex flex-col">
                 <span
-                  className="text-xl font-black tracking-wider text-white group-hover:opacity-95 transition-opacity"
+                  className="text-lg font-black tracking-wider text-white group-hover:opacity-95 transition-opacity"
                   style={{ fontFamily: 'var(--font-display), sans-serif' }}
                 >
                   THE <span className="text-[#ff5a1f] drop-shadow-[0_0_12px_rgba(255,90,31,0.5)]">DROP</span>
@@ -221,54 +221,51 @@ export default function DashboardLayout({
             )}
           </div>
 
-          {/* Quick Context Pill */}
+          {/* User Account Profile Card */}
           {!isCollapsed ? (
-            <div className="p-3 rounded-2xl bg-zinc-900/60 border border-zinc-800/70 backdrop-blur-sm">
-              <div className="flex items-center justify-between text-[11px] text-zinc-400 font-mono mb-1.5">
-                <span>ACTIVE SESSION</span>
-                <span className="inline-flex items-center gap-1 text-emerald-400">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  ONLINE
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-xl bg-[#ff5a1f]/15 border border-[#ff5a1f]/30 flex items-center justify-center text-xs font-bold text-[#ff5a1f] uppercase">
-                    {user?.username.charAt(0) || 'U'}
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs font-semibold text-zinc-200 truncate max-w-[120px]">
-                      {user?.username}
-                    </span>
-                    <span className="text-[10px] font-mono text-zinc-500 capitalize">
-                      {user?.role} Access
-                    </span>
-                  </div>
+            <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-zinc-900/50 border border-zinc-800/80 hover:border-zinc-700/70 transition-colors">
+              <div className="relative shrink-0">
+                <div className="w-7 h-7 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-semibold text-zinc-200 uppercase">
+                  {user?.username.charAt(0) || 'U'}
                 </div>
-                {user?.role === 'admin' && (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center gap-1">
-                    <Shield className="w-3 h-3" />
-                    Admin
+                <span className="w-2 h-2 rounded-full bg-emerald-500 absolute -bottom-0.5 -right-0.5 ring-2 ring-[#0a0b10]" />
+              </div>
+              <div className="flex flex-col min-w-0 flex-1 leading-tight">
+                <div className="flex items-center justify-between gap-1">
+                  <span className="text-xs font-medium text-zinc-100 truncate">
+                    {user?.username}
                   </span>
-                )}
+                  {user?.role === 'admin' ? (
+                    <span className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-amber-500/10 border border-amber-500/20 text-amber-400 uppercase tracking-wider">
+                      Admin
+                    </span>
+                  ) : (
+                    <span className="text-[10px] text-zinc-500 font-mono">
+                      User
+                    </span>
+                  )}
+                </div>
+                <span className="text-[10px] text-zinc-400 truncate mt-0.5">
+                  {user?.role === 'admin' ? 'Workspace Admin' : 'Active Account'}
+                </span>
               </div>
             </div>
           ) : (
             <div
-              className="hidden md:flex flex-col items-center justify-center p-2 rounded-xl bg-zinc-900/60 border border-zinc-800/70 relative cursor-pointer"
+              className="hidden md:flex flex-col items-center justify-center p-2 rounded-xl bg-zinc-900/50 border border-zinc-800/70 relative cursor-pointer hover:border-zinc-700 transition-colors"
               title={`${user?.username} (${user?.role})`}
             >
-              <div className="w-8 h-8 rounded-xl bg-[#ff5a1f]/15 border border-[#ff5a1f]/30 flex items-center justify-center text-xs font-bold text-[#ff5a1f] uppercase relative">
+              <div className="w-7 h-7 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-semibold text-zinc-200 uppercase relative">
                 {user?.username.charAt(0) || 'U'}
-                <span className="w-2 h-2 rounded-full bg-emerald-400 absolute -top-0.5 -right-0.5 ring-2 ring-[#0a0b10]" />
+                <span className="w-2 h-2 rounded-full bg-emerald-500 absolute -top-0.5 -right-0.5 ring-2 ring-[#0a0b10]" />
               </div>
             </div>
           )}
 
           {/* Navigation Links */}
-          <nav className="flex flex-col gap-1.5">
+          <nav className="flex flex-col gap-1">
             {!isCollapsed && (
-              <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 px-3 py-1">
+              <div className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 px-2.5 py-1">
                 Platforms & Modules
               </div>
             )}
@@ -285,20 +282,20 @@ export default function DashboardLayout({
                   title={item.name}
                   onClick={() => setMobileMenuOpen(false)}
                   className={`group flex items-center ${
-                    isCollapsed ? 'justify-center p-3' : 'px-3.5 py-2.5'
+                    isCollapsed ? 'justify-center p-2.5' : 'px-3 py-2'
                   } rounded-xl text-xs font-medium transition-all ${
                     isActive
                       ? 'bg-zinc-800/90 text-white shadow-lg border border-zinc-700/70 font-semibold'
                       : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60 border border-transparent'
                   }`}
                 >
-                  <div className={`flex items-center ${isCollapsed ? '' : 'gap-3'}`}>
+                  <div className={`flex items-center ${isCollapsed ? '' : 'gap-2.5'}`}>
                     <Icon
                       className={`w-4 h-4 transition-colors ${
                         isActive ? 'text-[#ff5a1f]' : 'text-zinc-500 group-hover:text-zinc-300'
                       }`}
                     />
-                    {!isCollapsed && <span>{item.name}</span>}
+                    {!isCollapsed && <span className="truncate">{item.name}</span>}
                   </div>
                 </Link>
               );
@@ -307,12 +304,12 @@ export default function DashboardLayout({
         </div>
 
         {/* Sidebar Footer */}
-        <div className={`flex flex-col gap-2 pt-4 border-t border-zinc-800/60 ${isCollapsed ? 'items-center' : ''}`}>
+        <div className={`flex flex-col gap-2 pt-3 border-t border-zinc-800/60 ${isCollapsed ? 'items-center' : ''}`}>
           <button
             onClick={handleLogout}
             title="Log Out Session"
             className={`flex items-center ${
-              isCollapsed ? 'justify-center p-2.5' : 'justify-between px-3.5 py-2'
+              isCollapsed ? 'justify-center p-2' : 'justify-between px-3 py-2'
             } rounded-xl text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors cursor-pointer w-full`}
           >
             <div className={`flex items-center ${isCollapsed ? '' : 'gap-2'}`}>

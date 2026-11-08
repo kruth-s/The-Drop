@@ -28,13 +28,16 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'The Drop',
+  title: 'The Drop - Just drop it',
   description: 'Instantly paste and share text, code snippets, and notes across all your devices in real-time. Zero sign-up, instant QR pairing.',
   keywords: ['online clipboard', 'cross device clipboard', 'share text online', 'pastebin', 'realtime clipboard', 'the drop'],
   icons: {
-    icon: '/favicon.svg',
-    shortcut: '/favicon.svg',
-    apple: '/favicon.svg',
+    icon: [
+      { url: '/favicon.png', type: 'image/png' },
+      { url: '/favicon.ico', sizes: 'any' },
+    ],
+    shortcut: '/favicon.png',
+    apple: '/favicon.png',
   },
 };
 

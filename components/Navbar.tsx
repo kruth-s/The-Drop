@@ -127,31 +127,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoom, onOpenQR, isSyncing
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
             )}
           </Link>
-
-          <Link
-            href="https://ai-code-navigator.vercel.app/"
-            target="_blank"
-            rel="noreferrer"
-            className="hover:text-white transition-colors"
-          >
-            AKAZA
-          </Link>
-
-          <Link
-            href="https://github.com"
-            target="_blank"
-            rel="noreferrer"
-            className="hover:text-white transition-colors flex items-center gap-1.5"
-          >
-            <Github className="w-3.5 h-3.5" />
-            <span>GitHub</span>
-          </Link>
         </nav>
 
-
-        {/* Right Action container */}
-        <div className="flex items-center gap-2 shrink-0">
-
+        {/* Right Action Container: [ Login ] -> [ AKAZA ] -> [ GitHub ] */}
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          {/* 1. Login / User Session Profile */}
           {authUser ? (
             <div className="flex items-center gap-2">
               <Link
@@ -160,7 +140,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoom, onOpenQR, isSyncing
                 title="Open Mission Control Dashboard"
               >
                 <LayoutGrid className="w-3.5 h-3.5 text-[#ff5a1f]" />
-                <span>Dashboard</span>
+                <span className="hidden sm:inline">Dashboard</span>
               </Link>
 
               {authUser.role === 'admin' && (
@@ -174,7 +154,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoom, onOpenQR, isSyncing
                 </Link>
               )}
 
-              <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 text-zinc-200 rounded-full px-3.5 py-1.5 text-xs font-semibold tracking-wide shadow-md">
+              <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 text-zinc-200 rounded-full px-3 py-1.5 text-xs font-semibold tracking-wide shadow-md">
                 <span className="truncate max-w-[80px] sm:max-w-[120px]">{authUser.username}</span>
                 <button
                   onClick={async () => {
@@ -184,7 +164,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoom, onOpenQR, isSyncing
                     router.refresh();
                   }}
                   title="Log Out"
-                  className="text-zinc-500 hover:text-red-400 transition-colors ml-0.5"
+                  className="text-zinc-500 hover:text-red-400 transition-colors ml-0.5 cursor-pointer"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                 </button>
@@ -201,13 +181,40 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoom, onOpenQR, isSyncing
               </Link>
               <Link
                 href="/login"
-                className="px-5 py-2 rounded-full bg-white hover:bg-zinc-100 text-zinc-950 font-black text-xs uppercase tracking-wider transition-all shadow-[0_2px_14px_rgba(255,255,255,0.18)] hover:scale-105 active:scale-95"
+                className="px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-white hover:bg-zinc-100 text-zinc-950 font-black text-xs uppercase tracking-wider transition-all shadow-[0_2px_14px_rgba(255,255,255,0.18)] hover:scale-105 active:scale-95"
                 style={{ fontFamily: 'var(--font-display), sans-serif' }}
               >
                 Login
               </Link>
             </div>
           )}
+
+          {/* 2. AKAZA (Placed between Login and GitHub with dedicated Logo) */}
+          <Link
+            href="https://ai-code-navigator.vercel.app/"
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-zinc-950/90 hover:bg-zinc-900 border border-zinc-800/90 hover:border-zinc-700 transition-all hover:scale-105 group shadow-sm"
+            title="AKAZA AI Code Navigator"
+          >
+            <img
+              src="/akaza-logo.png"
+              alt="AKAZA"
+              className="h-4 sm:h-5 w-auto object-contain filter drop-shadow-[0_0_8px_rgba(255,255,255,0.25)] group-hover:brightness-110 transition-all"
+            />
+          </Link>
+
+          {/* 3. GitHub */}
+          <Link
+            href="https://github.com/kruth-s/The-Drop"
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-950/90 hover:bg-zinc-900 border border-zinc-800/90 hover:border-zinc-700 text-xs text-zinc-400 hover:text-white transition-all hover:scale-105 shadow-sm"
+            title="GitHub Repository"
+          >
+            <Github className="w-3.5 h-3.5 text-zinc-300" />
+            <span className="hidden sm:inline font-medium">GitHub</span>
+          </Link>
         </div>
       </div>
     </header>

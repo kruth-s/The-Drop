@@ -30,6 +30,7 @@ import {
   Trash2,
   Camera,
   Reply,
+  ChevronDown,
 } from 'lucide-react';
 import { ChatMessage } from '@/lib/chat';
 
@@ -94,6 +95,11 @@ export default function DashboardChatPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  const isUserNearBottomRef = useRef<boolean>(true);
+  const initialChannelLoadedRef = useRef<string | null>(null);
+  const [isNearBottom, setIsNearBottom] = useState(true);
 
   // New Group Modal
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -166,6 +172,16 @@ export default function DashboardChatPage() {
       .catch(() => {});
   }, []);
 
+  // Track scroll position so we never interrupt the user when reading previous messages
+  const handleChatScroll = () => {
+    const el = chatContainerRef.current;
+    if (!el) return;
+    const distanceToBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    const near = distanceToBottom < 100;
+    isUserNearBottomRef.current = near;
+    setIsNearBottom(near);
+  };
+
   // Fetch messages function
   const fetchMessages = async (silent = false) => {
     if (!silent) setIsRefreshing(true);
@@ -173,7 +189,17 @@ export default function DashboardChatPage() {
       const res = await fetch(`/api/chat?channel=${encodeURIComponent(activeChannel)}`);
       const data = await res.json();
       if (data.success && Array.isArray(data.messages)) {
-        setMessages(data.messages);
+        // Only update state if message IDs or length actually changed, preventing re-render thrashing
+        setMessages((prev) => {
+          if (prev.length === data.messages.length) {
+            const lastPrev = prev[prev.length - 1]?.id;
+            const lastNew = data.messages[data.messages.length - 1]?.id;
+            if (lastPrev === lastNew) {
+              return prev;
+            }
+          }
+          return data.messages;
+        });
       }
     } catch (e) {
       console.error('Chat poll error:', e);
@@ -184,6 +210,9 @@ export default function DashboardChatPage() {
 
   // Switch channel and poll messages
   useEffect(() => {
+    isUserNearBottomRef.current = true;
+    setIsNearBottom(true);
+    initialChannelLoadedRef.current = null;
     fetchMessages(false);
     const interval = setInterval(() => {
       fetchMessages(true);
@@ -191,10 +220,30 @@ export default function DashboardChatPage() {
     return () => clearInterval(interval);
   }, [activeChannel]);
 
-  // Scroll to bottom on new message
+  // WhatsApp-Style Intelligent Scroll:
+  // - First time opening channel: scrolls to bottom once.
+  // - If user has scrolled up to read previous messages: NEVER auto-scroll down on poll!
+  // - If user is already at the bottom: smoothly tracks new messages.
   useEffect(() => {
+    if (messages.length === 0) return;
+
+    // 1. Initial channel load: scroll to bottom once
+    if (initialChannelLoadedRef.current !== activeChannel) {
+      initialChannelLoadedRef.current = activeChannel;
+      messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
+      isUserNearBottomRef.current = true;
+      setIsNearBottom(true);
+      return;
+    }
+
+    // 2. If user is scrolled up reading previous messages, DO NOT auto-scroll down!
+    if (!isUserNearBottomRef.current) {
+      return;
+    }
+
+    // 3. Otherwise, if user was already at the bottom, maintain scroll position smoothly
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, activeChannel]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -346,6 +395,12 @@ export default function DashboardChatPage() {
         setAttachMeta({});
         setShowAttachMenu(false);
         setShowGifPicker(false);
+        // User just sent a message: scroll down smoothly so they see their message
+        isUserNearBottomRef.current = true;
+        setIsNearBottom(true);
+        setTimeout(() => {
+          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }, 60);
       }
     } catch (e) {
       console.error('Failed to send message:', e);
@@ -505,9 +560,13 @@ export default function DashboardChatPage() {
         </div>
 
         {/* Right: Message Stream & Composer */}
-        <div className="flex-1 flex flex-col min-w-0 min-h-0 bg-[#08090d] overflow-hidden">
+        <div className="flex-1 flex flex-col min-w-0 min-h-0 bg-[#08090d] overflow-hidden relative">
           {/* Message List */}
-          <div className="flex-1 min-h-0 p-5 overflow-y-auto flex flex-col gap-4">
+          <div
+            ref={chatContainerRef}
+            onScroll={handleChatScroll}
+            className="flex-1 min-h-0 p-5 overflow-y-auto flex flex-col gap-4"
+          >
             {messages.length === 0 ? (
               <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
                 <MessageSquare className="w-8 h-8 text-zinc-600 mb-2" />
@@ -744,6 +803,23 @@ export default function DashboardChatPage() {
                 <X className="w-4 h-4" />
               </button>
             </div>
+          )}
+
+          {/* Floating Jump-to-Latest Button */}
+          {!isNearBottom && (
+            <button
+              type="button"
+              onClick={() => {
+                messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+                setIsNearBottom(true);
+                isUserNearBottomRef.current = true;
+              }}
+              className="absolute bottom-24 right-6 p-2 rounded-full bg-zinc-900/95 border border-zinc-700 text-zinc-300 hover:text-white shadow-2xl hover:scale-105 transition-all cursor-pointer flex items-center gap-1.5 text-xs z-20 backdrop-blur-md animate-in fade-in slide-in-from-bottom-2"
+              title="Jump to latest message"
+            >
+              <ChevronDown className="w-4 h-4 text-[#ff5a1f]" />
+              <span className="text-[11px] font-medium pr-1">Latest</span>
+            </button>
           )}
 
           {/* WhatsApp-Style Replying Banner */}
