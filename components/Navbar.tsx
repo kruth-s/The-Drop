@@ -154,10 +154,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoom, onOpenQR, isSyncing
 
           {authUser ? (
             <div className="flex items-center gap-2">
+              <Link
+                href="/dashboard"
+                className="px-3.5 py-1.5 rounded-full bg-[#ff5a1f]/15 hover:bg-[#ff5a1f]/25 border border-[#ff5a1f]/40 text-[#ff7a45] hover:text-[#ff9266] text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
+                title="Open Mission Control Dashboard"
+              >
+                <LayoutGrid className="w-3.5 h-3.5 text-[#ff5a1f]" />
+                <span>Dashboard</span>
+              </Link>
+
               {authUser.role === 'admin' && (
                 <Link
                   href="/admin"
-                  className="px-3.5 py-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-mono font-semibold flex items-center gap-1.5 transition-all shadow-sm"
+                  className="px-3 py-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-mono font-semibold flex items-center gap-1.5 transition-all shadow-sm"
                   title="Admin Access Control Panel"
                 >
                   <Shield className="w-3 h-3 text-amber-400" />
@@ -165,7 +174,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoom, onOpenQR, isSyncing
                 </Link>
               )}
 
-              <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 text-zinc-200 rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide shadow-md">
+              <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 text-zinc-200 rounded-full px-3.5 py-1.5 text-xs font-semibold tracking-wide shadow-md">
                 <span className="truncate max-w-[80px] sm:max-w-[120px]">{authUser.username}</span>
                 <button
                   onClick={async () => {
@@ -182,13 +191,22 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoom, onOpenQR, isSyncing
               </div>
             </div>
           ) : (
-            <Link
-              href="/login"
-              className="px-5 py-2 rounded-full bg-white hover:bg-zinc-100 text-zinc-950 font-black text-xs uppercase tracking-wider transition-all shadow-[0_2px_14px_rgba(255,255,255,0.18)] hover:scale-105 active:scale-95"
-              style={{ fontFamily: 'var(--font-display), sans-serif' }}
-            >
-              Login
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/dashboard"
+                className="md:hidden px-3 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white text-xs font-medium flex items-center gap-1.5"
+              >
+                <LayoutGrid className="w-3.5 h-3.5 text-[#ff5a1f]" />
+                <span>Dashboard</span>
+              </Link>
+              <Link
+                href="/login"
+                className="px-5 py-2 rounded-full bg-white hover:bg-zinc-100 text-zinc-950 font-black text-xs uppercase tracking-wider transition-all shadow-[0_2px_14px_rgba(255,255,255,0.18)] hover:scale-105 active:scale-95"
+                style={{ fontFamily: 'var(--font-display), sans-serif' }}
+              >
+                Login
+              </Link>
+            </div>
           )}
         </div>
       </div>

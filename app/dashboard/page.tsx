@@ -18,6 +18,7 @@ import {
   Database,
   ExternalLink,
   Cpu,
+  PenTool,
 } from 'lucide-react';
 
 export default function DashboardOverviewPage() {
@@ -360,6 +361,59 @@ export default function DashboardOverviewPage() {
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
               <span className="text-[11px] font-mono text-zinc-500">Client-Side Encrypted</span>
+            </div>
+          </div>
+
+          {/* 5. TextEnd AI Suite Card */}
+          <div className="md:col-span-2 group relative rounded-2xl p-6 bg-gradient-to-b from-zinc-900/90 to-zinc-950 border border-zinc-800/80 hover:border-purple-500/40 transition-all flex flex-col justify-between shadow-xl">
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <div className="w-10 h-10 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                  <PenTool className="w-5 h-5" />
+                </div>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                  AUTONOMOUS AI SUITE
+                </span>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-bold text-white group-hover:text-purple-400 transition-colors">
+                  TextEnd Autonomous AI Writing & Verification Suite
+                </h3>
+                <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                  High-speed linguistic perturbation and content transformation platform. Includes StealthWriter-grade AI Humanizer,
+                  QuillBot-grade Summarizer, Neural Paraphraser, Plagiarism Checker, Outline Elaborator, and 5-Engine AI Content Detector.
+                </p>
+              </div>
+
+              <div className="mt-2 flex flex-wrap gap-2 text-[11px] font-mono">
+                <span className="px-2.5 py-1 rounded-lg bg-zinc-950 border border-zinc-800 text-purple-300">
+                  AI Humanizer (Bypass Detectors)
+                </span>
+                <span className="px-2.5 py-1 rounded-lg bg-zinc-950 border border-zinc-800 text-emerald-300">
+                  Smart Summarizer
+                </span>
+                <span className="px-2.5 py-1 rounded-lg bg-zinc-950 border border-zinc-800 text-cyan-300">
+                  Neural Paraphraser
+                </span>
+                <span className="px-2.5 py-1 rounded-lg bg-zinc-950 border border-zinc-800 text-rose-300">
+                  Plagiarism Checker
+                </span>
+                <span className="px-2.5 py-1 rounded-lg bg-zinc-950 border border-zinc-800 text-amber-300">
+                  5-Engine AI Detector
+                </span>
+              </div>
+            </div>
+
+            <div className="pt-4 mt-4 border-t border-zinc-800/60 flex items-center justify-between">
+              <Link
+                href="/dashboard/textend"
+                className="text-xs font-semibold text-purple-400 hover:text-purple-300 inline-flex items-center gap-1.5 transition-colors"
+              >
+                <span>Launch TextEnd Suite</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+              <span className="text-[11px] font-mono text-zinc-500">Groq LLM Accelerated</span>
             </div>
           </div>
         </div>

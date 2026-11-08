@@ -1,7 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
+export const dynamic = 'force-dynamic';
+
+import React, { useState, useEffect, Suspense } from 'react';
+import dynamicModule from 'next/dynamic';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Toast, ToastMessage } from '@/components/Toast';
 import { Navbar } from '@/components/Navbar';
@@ -19,10 +22,11 @@ import {
   Box,
   Key,
   Users,
+  LayoutGrid,
 } from 'lucide-react';
 
 // Dynamic import with SSR disabled for Three.js Canvas
-const GlobeScene = dynamic(() => import('@/components/Globe'), {
+const GlobeScene = dynamicModule(() => import('@/components/Globe'), {
   ssr: false,
   loading: () => (
     <div className="w-full h-full flex items-center justify-center">
@@ -33,7 +37,7 @@ const GlobeScene = dynamic(() => import('@/components/Globe'), {
   ),
 });
 
-export default function HomePage() {
+function HomeContent() {
   const [customRoom, setCustomRoom] = useState('');
   const [privateRoom, setPrivateRoom] = useState('');
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
@@ -204,6 +208,18 @@ export default function HomePage() {
             One room. Every device.
             <span className="text-neutral-300"> Everything in sync.</span>
           </p>
+
+          {/* Direct Ecosystem Dashboard Launch Pill */}
+          <div className="relative z-30 mt-3 sm:mt-5 pointer-events-auto">
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-zinc-900/90 hover:bg-zinc-850 border border-zinc-700/80 hover:border-[#ff5a1f]/60 text-xs sm:text-sm font-semibold text-zinc-200 hover:text-white transition-all shadow-[0_4px_20px_rgba(0,0,0,0.5)] backdrop-blur-xl group hover:scale-105 active:scale-95"
+            >
+              <LayoutGrid className="w-4 h-4 text-[#ff5a1f] group-hover:scale-110 transition-transform" />
+              <span>Enter Ecosystem Dashboard</span>
+              <ArrowRight className="w-3.5 h-3.5 text-zinc-400 group-hover:text-[#ff5a1f] group-hover:translate-x-0.5 transition-all" />
+            </Link>
+          </div>
 
           {/* 3D Dotted Rotating & Draggable Globe Canvas */}
           <div className="absolute left-1/2 top-[-70px] sm:top-[-60px] lg:top-[-50px] h-[520px] sm:h-[680px] lg:h-[760px] w-full max-w-[1200px] -translate-x-1/2 pointer-events-auto z-10 overflow-visible">
@@ -384,5 +400,19 @@ export default function HomePage() {
 
       <Toast toasts={toasts} onClose={removeToast} />
     </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen w-full bg-black flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full border-2 border-[#ff5a1f] border-t-transparent animate-spin" />
+        </div>
+      }
+    >
+      <HomeContent />
+    </Suspense>
   );
 }

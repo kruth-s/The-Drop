@@ -17,6 +17,7 @@ import {
   ExternalLink,
   Sparkles,
   ChevronRight,
+  PenTool,
 } from 'lucide-react';
 
 interface AuthUser {
@@ -112,6 +113,13 @@ export default function DashboardLayout({
       icon: HardDrive,
       tag: 'IPFS / Web3',
       badgeColor: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20',
+    },
+    {
+      name: 'TextEnd AI Suite',
+      href: '/dashboard/textend',
+      icon: PenTool,
+      tag: 'Autonomous AI',
+      badgeColor: 'bg-purple-500/10 text-purple-400 border border-purple-500/20',
     },
   ];
 

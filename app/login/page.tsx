@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+export const dynamic = 'force-dynamic';
+
+import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { KeyRound, User, ArrowRight, AlertCircle, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { SecurityGatekeeper } from '@/components/SecurityGatekeeper';
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const from = searchParams.get('from') || '/dashboard';
@@ -161,5 +163,19 @@ export default function LoginPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen w-full flex items-center justify-center bg-[#0a0a0d] text-zinc-100">
+          <div className="w-8 h-8 rounded-full border-2 border-[#ff5a1f] border-t-transparent animate-spin" />
+        </div>
+      }
+    >
+      <LoginContent />
+    </Suspense>
   );
 }
