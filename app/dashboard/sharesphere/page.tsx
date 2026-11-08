@@ -20,6 +20,9 @@ import {
   ArrowRight,
   Database,
   Cpu,
+  Globe,
+  Share2,
+  Info,
 } from 'lucide-react';
 import { ShareSphereFile } from '@/lib/sharesphere';
 
@@ -210,11 +213,11 @@ export default function DashboardShareSpherePage() {
               className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white"
               style={{ fontFamily: 'var(--font-display), sans-serif' }}
             >
-              ShareSphere <span className="text-emerald-400">Web3 Vault</span>
+              IPFS <span className="text-emerald-400">Locker</span>
             </h1>
           </div>
           <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-            Decentralized censorship-resistant storage on IPFS. MetaMask wallet authentication & client-side encryption.
+            Permanent peer-to-peer file storage powered by IPFS. Client-side AES-256 encryption & instant handoff to Team Chat.
           </p>
         </div>
 
@@ -235,6 +238,54 @@ export default function DashboardShareSpherePage() {
               <span>{isConnectingWallet ? 'Connecting...' : 'Connect MetaMask'}</span>
             </button>
           )}
+        </div>
+      </div>
+
+      {/* How It Works & Ecosystem Purpose Guide */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 p-4 rounded-2xl bg-zinc-900/40 border border-zinc-800/80 backdrop-blur-sm">
+        <div className="flex items-start gap-3 p-3 rounded-xl bg-zinc-950/70 border border-zinc-800/60">
+          <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 font-bold text-xs">
+            1
+          </div>
+          <div>
+            <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+              <UploadCloud className="w-3.5 h-3.5 text-emerald-400" />
+              Upload & Encrypt
+            </h4>
+            <p className="text-[11px] text-zinc-400 mt-0.5 leading-snug">
+              Select any file. Optional client-side AES password encryption protects files before they leave your device.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-3 p-3 rounded-xl bg-zinc-950/70 border border-zinc-800/60">
+          <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 font-bold text-xs">
+            2
+          </div>
+          <div>
+            <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+              <Globe className="w-3.5 h-3.5 text-emerald-400" />
+              IPFS Decentralized Pinning
+            </h4>
+            <p className="text-[11px] text-zinc-400 mt-0.5 leading-snug">
+              Files are distributed across IPFS nodes with unique CIDs. Tamper-proof, censorship-free, and permanent.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-3 p-3 rounded-xl bg-zinc-950/70 border border-zinc-800/60">
+          <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 font-bold text-xs">
+            3
+          </div>
+          <div>
+            <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+              <Share2 className="w-3.5 h-3.5 text-emerald-400" />
+              1-Click Ecosystem Share
+            </h4>
+            <p className="text-[11px] text-zinc-400 mt-0.5 leading-snug">
+              Push pinned CIDs directly to Team Chat (#research/#general) or copy them to The Drop clipboard in real time.
+            </p>
+          </div>
         </div>
       </div>
 

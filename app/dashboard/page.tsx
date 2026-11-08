@@ -75,29 +75,13 @@ export default function DashboardOverviewPage() {
 
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex flex-col gap-2 max-w-2xl">
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-1 rounded-full text-[11px] font-mono font-semibold bg-[#ff5a1f]/15 border border-[#ff5a1f]/30 text-[#ff7a45] inline-flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5" />
-                CENTRAL HUB ACTIVATED
-              </span>
-              <span className="px-2.5 py-1 rounded-full text-[11px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 inline-flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                REDIS CLUSTER READY
-              </span>
-            </div>
-
             <h1
-              className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-white mt-1"
+              className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-white"
               style={{ fontFamily: 'var(--font-display), sans-serif' }}
             >
               Welcome Back,{' '}
               <span className="text-[#ff5a1f]">{user?.username || 'Commander'}</span>
             </h1>
-
-            <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed">
-              Your unified workspace seamlessly links real-time cross-device clipboard synchronization,
-              low-latency team communication, AI-driven academic discovery, and Web3 decentralized IPFS file storage.
-            </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
@@ -247,12 +231,15 @@ export default function DashboardOverviewPage() {
                 </h3>
                 <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
                   High-speed team communication built on top of Redis streams. Supports group channels
-                  (<code className="text-zinc-300">#general</code>, <code className="text-zinc-300">#research</code>, <code className="text-zinc-300">#dev-team</code>)
+                  (<code className="text-zinc-300">#AKA</code>, <code className="text-zinc-300">#general</code>, <code className="text-zinc-300">#research</code>, <code className="text-zinc-300">#dev-team</code>)
                   and direct member chat with 1-click rich snippet, CID, and academic paper sharing.
                 </p>
               </div>
 
               <div className="mt-2 flex flex-wrap gap-2 text-[11px] font-mono">
+                <span className="px-2.5 py-1 rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-300 font-semibold">
+                  #AKA
+                </span>
                 <span className="px-2.5 py-1 rounded-lg bg-zinc-950 border border-zinc-800 text-zinc-300">
                   #general-cohort
                 </span>
@@ -277,7 +264,7 @@ export default function DashboardOverviewPage() {
             </div>
           </div>
 
-          {/* 3. UniVault Academic Hub Card */}
+          {/* 3. Knowledge Hub Card */}
           <div className="group relative rounded-2xl p-6 bg-gradient-to-b from-zinc-900/90 to-zinc-950 border border-zinc-800/80 hover:border-sky-500/40 transition-all flex flex-col justify-between shadow-xl">
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
@@ -291,7 +278,7 @@ export default function DashboardOverviewPage() {
 
               <div>
                 <h3 className="text-lg font-bold text-white group-hover:text-sky-400 transition-colors">
-                  UniVault Academic Hub
+                  Knowledge Hub
                 </h3>
                 <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
                   Collaborative platform for university students and engineers to share, discover, and request academic resources.
@@ -317,14 +304,14 @@ export default function DashboardOverviewPage() {
                 href="/dashboard/univault"
                 className="text-xs font-semibold text-sky-400 hover:text-sky-300 inline-flex items-center gap-1.5 transition-colors"
               >
-                <span>Browse Academic Vault</span>
+                <span>Open Knowledge Hub</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
               <span className="text-[11px] font-mono text-zinc-500">Student Request Board</span>
             </div>
           </div>
 
-          {/* 4. ShareSphere dApp Card */}
+          {/* 4. IPFS Locker Card */}
           <div className="group relative rounded-2xl p-6 bg-gradient-to-b from-zinc-900/90 to-zinc-950 border border-zinc-800/80 hover:border-emerald-500/40 transition-all flex flex-col justify-between shadow-xl">
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
@@ -338,10 +325,10 @@ export default function DashboardOverviewPage() {
 
               <div>
                 <h3 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">
-                  ShareSphere Web3 Storage
+                  IPFS Locker
                 </h3>
                 <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                  Decentralized file storage dApp built on IPFS with MetaMask smart contract verification.
+                  Decentralized file storage built on IPFS with optional MetaMask smart contract verification.
                   Offers censorship-resistant file distribution, client-side AES encryption, and immutable transaction hashes.
                 </p>
               </div>
@@ -357,14 +344,14 @@ export default function DashboardOverviewPage() {
                 href="/dashboard/sharesphere"
                 className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 inline-flex items-center gap-1.5 transition-colors"
               >
-                <span>Open Web3 dApp</span>
+                <span>Open IPFS Locker</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
               <span className="text-[11px] font-mono text-zinc-500">Client-Side Encrypted</span>
             </div>
           </div>
 
-          {/* 5. TextEnd AI Suite Card */}
+          {/* 5. TextEnd Card */}
           <div className="md:col-span-2 group relative rounded-2xl p-6 bg-gradient-to-b from-zinc-900/90 to-zinc-950 border border-zinc-800/80 hover:border-purple-500/40 transition-all flex flex-col justify-between shadow-xl">
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
@@ -372,13 +359,13 @@ export default function DashboardOverviewPage() {
                   <PenTool className="w-5 h-5" />
                 </div>
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20">
-                  AUTONOMOUS AI SUITE
+                  WRITING & VERIFICATION
                 </span>
               </div>
 
               <div>
                 <h3 className="text-lg font-bold text-white group-hover:text-purple-400 transition-colors">
-                  TextEnd Autonomous AI Writing & Verification Suite
+                  TextEnd
                 </h3>
                 <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
                   High-speed linguistic perturbation and content transformation platform. Includes StealthWriter-grade AI Humanizer,
@@ -410,7 +397,7 @@ export default function DashboardOverviewPage() {
                 href="/dashboard/textend"
                 className="text-xs font-semibold text-purple-400 hover:text-purple-300 inline-flex items-center gap-1.5 transition-colors"
               >
-                <span>Launch TextEnd Suite</span>
+                <span>Launch TextEnd</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
               <span className="text-[11px] font-mono text-zinc-500">Groq LLM Accelerated</span>

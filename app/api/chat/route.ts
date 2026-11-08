@@ -5,7 +5,7 @@ import { getChannelMessages, sendChatMessage, ChatMessage } from '@/lib/chat';
 export async function GET(request: NextRequest) {
   try {
     const channelId = request.nextUrl.searchParams.get('channel') || 'general';
-    const messages = await getChannelMessages(channelId, 100);
+    const messages = await getChannelMessages(channelId, 200);
     return NextResponse.json({ success: true, channelId, messages });
   } catch (error: any) {
     return NextResponse.json(
@@ -21,9 +21,12 @@ export async function POST(request: NextRequest) {
     const session = sessionId ? await getSession(sessionId) : null;
 
     const body = await request.json();
-    const { channelId = 'general', content, type = 'text', metadata } = body;
+    const { channelId = 'general', content = '', type = 'text', metadata, replyTo } = body;
 
-    if (!content || !content.trim()) {
+    const hasMedia = metadata?.mediaUrl;
+    const trimmedContent = content?.trim() || '';
+
+    if (!trimmedContent && !hasMedia) {
       return NextResponse.json(
         { success: false, error: 'Message content cannot be empty' },
         { status: 400 }
@@ -37,9 +40,10 @@ export async function POST(request: NextRequest) {
       channelId,
       senderUsername,
       senderRole,
-      content: content.trim(),
+      content: trimmedContent || (type === 'image' ? 'Photo' : type === 'video' ? 'Video' : type === 'gif' ? 'GIF' : 'Media attachment'),
       type,
       metadata,
+      replyTo,
     });
 
     return NextResponse.json({ success: true, message: newMessage });

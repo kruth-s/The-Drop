@@ -153,7 +153,7 @@ export default function DashboardUniVaultPage() {
               className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white"
               style={{ fontFamily: 'var(--font-display), sans-serif' }}
             >
-              UniVault <span className="text-sky-400">Academic Hub</span>
+              Knowledge <span className="text-sky-400">Hub</span>
             </h1>
           </div>
           <p className="text-xs sm:text-sm text-zinc-400 mt-1">
