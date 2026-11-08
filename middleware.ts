@@ -65,12 +65,13 @@ export async function middleware(request: NextRequest) {
     } else {
       // Local dev fallback when Redis credentials aren't set yet: trust session cookie prefix
       if (sessionId.startsWith('drop_sess_')) {
-        // Let it pass to route handlers where in-memory session validator inspects it
+        const match = sessionId.match(/^drop_sess_([^_]+)_/);
+        const username = match ? match[1] : (sessionId.includes('admin') ? 'admin' : 'user');
         session = {
           sessionId,
-          userId: 'local_user',
-          username: sessionId.includes('admin') ? 'admin' : 'user',
-          role: 'admin',
+          userId: `usr_${username}`,
+          username,
+          role: username === 'admin' ? 'admin' : 'user',
           allowedRooms: ['*'],
           expiresAt: Date.now() + 86400000,
         };
@@ -78,10 +79,10 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // 3. User is already authenticated and visits /login -> redirect to home
+  // 3. User is already authenticated and visits /login -> redirect to dashboard
   if (isPublicPath) {
     if (session && pathname === '/login') {
-      return NextResponse.redirect(new URL('/', request.url));
+      return NextResponse.redirect(new URL('/dashboard', request.url));
     }
     return NextResponse.next();
   }

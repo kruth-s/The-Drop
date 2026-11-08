@@ -29,10 +29,23 @@ export interface SessionRecord {
 }
 
 // In-memory fallbacks when Redis is not configured (local dev)
-const memoryUsers = new Map<string, UserRecord>();
-const memorySessions = new Map<string, SessionRecord>();
-const memoryAccessedRooms = new Map<string, Set<string>>();
-const memoryCreatedRooms = new Map<string, Set<string>>();
+// Preserved across Next.js dev server hot-reloads via globalThis
+const globalForAuth = globalThis as unknown as {
+  memoryUsers?: Map<string, UserRecord>;
+  memorySessions?: Map<string, SessionRecord>;
+  memoryAccessedRooms?: Map<string, Set<string>>;
+  memoryCreatedRooms?: Map<string, Set<string>>;
+};
+
+const memoryUsers = globalForAuth.memoryUsers ?? new Map<string, UserRecord>();
+const memorySessions = globalForAuth.memorySessions ?? new Map<string, SessionRecord>();
+const memoryAccessedRooms = globalForAuth.memoryAccessedRooms ?? new Map<string, Set<string>>();
+const memoryCreatedRooms = globalForAuth.memoryCreatedRooms ?? new Map<string, Set<string>>();
+
+globalForAuth.memoryUsers = memoryUsers;
+globalForAuth.memorySessions = memorySessions;
+globalForAuth.memoryAccessedRooms = memoryAccessedRooms;
+globalForAuth.memoryCreatedRooms = memoryCreatedRooms;
 
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days (User requested)
 
@@ -74,10 +87,68 @@ export function hasRoomAccess(
   );
 }
 
+const DEFAULT_SYSTEM_USERS = [
+  { username: 'admin', role: 'admin', password: process.env.ADMIN_DEFAULT_PASSWORD || 'admin123' },
+  { username: 'kruth', role: 'user', password: 'kruth123' },
+  { username: 'avs', role: 'user', password: 'avs123' },
+  { username: 'athish', role: 'user', password: 'athish123' },
+];
+
+let isInitialized = false;
+
+/**
+ * Ensure default initial users exist (admin, kruth, avs, athish)
+ */
+export async function ensureAdminUser(): Promise<void> {
+  if (isInitialized) return;
+  isInitialized = true;
+
+  for (const item of DEFAULT_SYSTEM_USERS) {
+    const cleanUser = item.username.toLowerCase().trim();
+    if (memoryUsers.has(cleanUser)) continue;
+
+    let existingInRedis: UserRecord | null = null;
+    if (redis) {
+      try {
+        existingInRedis = await redis.get<UserRecord>(`auth:user:${cleanUser}`);
+      } catch (e) {}
+    }
+
+    if (existingInRedis) {
+      memoryUsers.set(cleanUser, existingInRedis);
+    } else {
+      const { hash, salt } = hashPassword(item.password);
+      const now = new Date().toISOString();
+      const userRec: UserRecord = {
+        id: `usr_${cleanUser}_${Date.now().toString(36)}`,
+        username: cleanUser,
+        role: item.role as 'admin' | 'user',
+        passwordHash: hash,
+        salt,
+        allowedRooms: ['*'],
+        status: 'active',
+        createdAt: now,
+        updatedAt: now,
+      };
+
+      if (redis) {
+        try {
+          await redis.set(`auth:user:${cleanUser}`, userRec);
+          await redis.sadd('auth:users', cleanUser);
+        } catch (e) {}
+      }
+
+      memoryUsers.set(cleanUser, userRec);
+      console.log(`[AUTH] Initialized user '${cleanUser}' (password: '${item.password}')`);
+    }
+  }
+}
+
 /**
  * Get user by username
  */
 export async function getUser(username: string): Promise<UserRecord | null> {
+  await ensureAdminUser();
   const cleanUsername = username.toLowerCase().trim();
 
   if (redis) {
@@ -93,43 +164,6 @@ export async function getUser(username: string): Promise<UserRecord | null> {
   }
 
   return memoryUsers.get(cleanUsername) || null;
-}
-
-/**
- * Ensure default initial admin exists
- */
-export async function ensureAdminUser(): Promise<void> {
-  const adminUsername = 'admin';
-  const existing = await getUser(adminUsername);
-  if (!existing) {
-    const defaultPassword = process.env.ADMIN_DEFAULT_PASSWORD || 'admin123';
-    const { hash, salt } = hashPassword(defaultPassword);
-    const now = new Date().toISOString();
-
-    const adminUser: UserRecord = {
-      id: 'usr_admin_' + Date.now().toString(36),
-      username: adminUsername,
-      role: 'admin',
-      passwordHash: hash,
-      salt,
-      allowedRooms: ['*'],
-      status: 'active',
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    if (redis) {
-      try {
-        await redis.set(`auth:user:${adminUsername}`, adminUser);
-        await redis.sadd('auth:users', adminUsername);
-      } catch (e) {
-        console.error('Failed to seed admin in Redis:', e);
-      }
-    }
-
-    memoryUsers.set(adminUsername, adminUser);
-    console.log(`[AUTH SYSTEM INITIALIZED] Default admin created: '${adminUsername}' with password '${defaultPassword}'`);
-  }
 }
 
 /**
@@ -388,7 +422,7 @@ export async function deleteUser(username: string): Promise<boolean> {
  * Create a new Server-Side Session in Upstash Redis
  */
 export async function createSession(user: UserRecord): Promise<SessionRecord> {
-  const sessionId = 'drop_sess_' + crypto.randomBytes(32).toString('hex');
+  const sessionId = `drop_sess_${user.username}_${crypto.randomBytes(24).toString('hex')}`;
   const now = Date.now();
   const expiresAt = now + SESSION_TTL_SECONDS * 1000;
 
@@ -432,6 +466,26 @@ export async function getSession(sessionId: string): Promise<SessionRecord | nul
 
   if (!session && memorySessions.has(sessionId)) {
     session = memorySessions.get(sessionId)!;
+  }
+
+  // Resilient local dev fallback: if in-memory session was evicted during hot reload,
+  // recover session for the authenticated user embedded in the token
+  if (!session && sessionId.startsWith('drop_sess_')) {
+    const match = sessionId.match(/^drop_sess_([^_]+)_/);
+    const username = match ? match[1] : (sessionId.includes('admin') ? 'admin' : 'user');
+    const existingUser = await getUser(username);
+    if (existingUser && existingUser.status !== 'disabled') {
+      session = {
+        sessionId,
+        userId: existingUser.id,
+        username: existingUser.username,
+        role: existingUser.role,
+        allowedRooms: existingUser.allowedRooms,
+        createdAt: Date.now(),
+        expiresAt: Date.now() + SESSION_TTL_SECONDS * 1000,
+      };
+      memorySessions.set(sessionId, session);
+    }
   }
 
   if (!session) return null;

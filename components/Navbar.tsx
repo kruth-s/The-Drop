@@ -117,96 +117,16 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoom, onOpenQR, isSyncing
             New Room
           </button>
 
-          {/* Dashboard menu trigger */}
-          <div className="relative">
-            <button
-              onClick={() => setIsDashboardOpen(!isDashboardOpen)}
-              className="hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
-            >
-              <span>Dashboard</span>
-              {currentRoom && (
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-              )}
-            </button>
-
-            {/* Dashboard Dropdown */}
-            {isDashboardOpen && (
-              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-72 bg-[#0c0f17] border border-zinc-800 rounded-2xl shadow-2xl p-3 flex flex-col gap-2.5 z-50 animate-in fade-in zoom-in-95 duration-100 text-left">
-                <div className="flex items-center justify-between px-1 text-[11px] font-mono text-zinc-400 uppercase tracking-wider">
-                  <span className="flex items-center gap-1.5">
-                    <FolderKanban className="w-3.5 h-3.5 text-[#ff5a1f]" />
-                    Project Rooms
-                  </span>
-                </div>
-
-                {/* Quick Jump Input */}
-                <form onSubmit={handleJoin} className="relative">
-                  <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-zinc-500" />
-                  <input
-                    type="text"
-                    placeholder="Switch room code..."
-                    value={joinSlug}
-                    onChange={(e) => setJoinSlug(e.target.value)}
-                    className="w-full py-1.5 pl-8 pr-7 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-[#ff5a1f] font-mono"
-                  />
-                  <button type="submit" className="absolute right-2 top-2 text-zinc-400 hover:text-zinc-200">
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                </form>
-
-                {/* Home & Recent Rooms */}
-                <div className="flex flex-col gap-1 border-t border-zinc-900 pt-2">
-                  <Link
-                    href="/"
-                    onClick={() => setIsDashboardOpen(false)}
-                    className="px-2.5 py-1.5 rounded-lg text-xs text-zinc-300 hover:bg-zinc-900 flex items-center gap-2 transition-colors"
-                  >
-                    <Home className="w-3.5 h-3.5 text-zinc-400" />
-                    <span>Home Workspace</span>
-                  </Link>
-
-                  {recentRooms.length > 0 && (
-                    <div className="mt-1">
-                      <span className="px-2 text-[10px] font-mono text-zinc-500 uppercase tracking-wider flex items-center gap-1 mb-1">
-                        <Clock className="w-3 h-3 text-zinc-500" />
-                        Recent Rooms
-                      </span>
-                      <div className="flex flex-col gap-0.5 max-h-36 overflow-y-auto">
-                        {recentRooms.map((room) => (
-                          <button
-                            key={room}
-                            onClick={() => {
-                              router.push(`/clip/${room}`);
-                              setIsDashboardOpen(false);
-                            }}
-                            className={`w-full px-2.5 py-1.5 rounded-lg text-xs text-left font-mono flex items-center justify-between transition-colors ${
-                              currentRoom === room
-                                ? 'bg-[#ff5a1f]/15 text-[#ff7a45] font-semibold border border-[#ff5a1f]/30'
-                                : 'text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200'
-                            }`}
-                          >
-                            <span className="truncate">{room}</span>
-                            {currentRoom === room && <span className="text-[10px] text-[#ff5a1f] font-sans">Active</span>}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <button
-                  onClick={() => {
-                    handleCreateNew();
-                    setIsDashboardOpen(false);
-                  }}
-                  className="w-full py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs font-semibold text-zinc-200 flex items-center justify-center gap-1.5 transition-colors"
-                >
-                  <Plus className="w-3.5 h-3.5 text-[#ff5a1f]" />
-                  <span>Create New Room</span>
-                </button>
-              </div>
+          {/* Dashboard Direct Link */}
+          <Link
+            href="/dashboard"
+            className="hover:text-white transition-colors flex items-center gap-1.5"
+          >
+            <span>Dashboard</span>
+            {currentRoom && (
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
             )}
-          </div>
+          </Link>
 
           <Link
             href="https://ai-code-navigator.vercel.app/"
